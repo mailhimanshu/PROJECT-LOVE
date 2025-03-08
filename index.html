@@ -141,6 +141,8 @@
     // BEGIN inline functions.js
     var $window = $(window), gardenCtx, gardenCanvas, $garden, garden;
     var clientWidth = $(window).width(), clientHeight = $(window).height();
+    var typewriterTimer; // Variable to store the typewriter timer
+    
     $(function () {
       $loveHeart = $("#loveHeart");
       var offsetX = $loveHeart.width() / 2, offsetY = $loveHeart.height() / 2 - 55;
@@ -186,11 +188,11 @@
         this.each(function() {
           var $ele = $(this), str = $ele.html(), progress = 0;
           $ele.html('');
-          var timer = setInterval(function() {
+          typewriterTimer = setInterval(function() {
             var current = str.substr(progress, 1);
             if (current == '<') { progress = str.indexOf('>', progress) + 1; } else { progress++; }
             $ele.html(str.substring(0, progress) + (progress & 1 ? '_' : ''));
-            if (progress >= str.length) { clearInterval(timer); }
+            if (progress >= str.length) { clearInterval(typewriterTimer); }
           }, 75);
         });
         return this;
@@ -322,6 +324,18 @@
       // Clear any pending animations
       clearTimeout(window.animationTimeout);
       
+      // Clear typewriter animation
+      if (typewriterTimer) {
+        clearInterval(typewriterTimer);
+      }
+      
+      // Show complete text immediately
+      var codeElement = document.getElementById('code');
+      var originalHtml = codeElement.getAttribute('data-original-html');
+      if (originalHtml) {
+        codeElement.innerHTML = originalHtml;
+      }
+      
       // Show final state
       adjustWordsPosition();
       $('#messages').show();
@@ -342,6 +356,10 @@
 
     // Initialization with timeout stored in a variable to allow cancellation
     $(function(){ 
+      // Store original HTML content before typewriter effect
+      var codeElement = document.getElementById('code');
+      codeElement.setAttribute('data-original-html', codeElement.innerHTML);
+      
       window.animationTimeout = setTimeout(function(){ startHeartAnimation(); }, 5000); 
       adjustCodePosition(); 
       $("#code").typewriter(); 
@@ -436,7 +454,7 @@
         Tab tu lena mera naam ek dua ki tarah<br>
         Main rahunga tere saath ek hawa ki tarah
       </p>
-      <div class="signature">- himanshu2025</div>
+      <div class="signature">-Himanshu2025</div>
     </div>
     <button onclick="$('#quoteModal').fadeOut();">Close</button>
   </div>
